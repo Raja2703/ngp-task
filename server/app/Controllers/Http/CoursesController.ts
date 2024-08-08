@@ -7,7 +7,7 @@ import CourseValidator from 'App/Validators/CourseValidator'
 export default class CoursesController {
   public getAllCourses = async ({ response }: HttpContextContract) => {
     try {
-      const courses = await Course.all()
+      const courses = await Course.query().preload('instructor')
       response.status(200)
 
       return {
@@ -25,12 +25,34 @@ export default class CoursesController {
 
   public getCourse = async ({ response, params }: HttpContextContract) => {
     try {
-      const course = await Course.findOrFail(params.id)
+      const course = await Course.query()
+        .where('id', params.id)
+        .preload('instructor')
+        .firstOrFail()
       response.status(200)
 
       return {
         success: true,
         course
+      }
+    } catch (err) {
+      console.log(err)
+      response.status(400).json({
+        success: false,
+        error: err
+      })
+    }
+  }
+
+  public deleteCourse = async ({ response, params }: HttpContextContract) => {
+    try {
+      const course = await Course.findOrFail(params.id)
+      await course.delete()
+
+      response.status(200)
+
+      return {
+        success: true,
       }
     } catch (err) {
       console.log(err)
@@ -79,11 +101,20 @@ export default class CoursesController {
       const course = await Course.findOrFail(params.id)
 
       const user: any = await User.findOrFail(user_id)
+
+      // 
       let myLearnings = user.myLearnings
       myLearnings.push(course.id)
-
       user.myLearnings = JSON.stringify(myLearnings)
+
+      // add progress value
+      // let progress = user.progress
+      // progress.push({ courseId: course.id, value: 20 })
+      // user.progress = JSON.stringify(progress)
       await user.save()
+
+      course.noOfEnrollments += 1
+      await course.save()
 
       response.status(200)
       return {
@@ -101,7 +132,7 @@ export default class CoursesController {
 
   public getMyTeachings = async ({ response, params }: HttpContextContract) => {
     try {
-      const courses = await Course.query().where('instructorId', params.id)
+      const courses = await Course.query().where('instructorId', params.id).preload('instructor')
 
       response.status(200)
       return {
@@ -125,7 +156,7 @@ export default class CoursesController {
 
       const courses = await Promise.all(
         courseIds.map(async (ele) => {
-          return await Course.query().where('id', ele).first();
+          return await Course.query().where('id', ele).preload('instructor').first();
         })
       );
 

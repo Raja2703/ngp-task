@@ -1,9 +1,13 @@
 import { defineStore } from "pinia";
 import axios from "axios"
 import { useRouter } from 'vue-router'
+import { ref } from "vue";
 
 export const userStore = defineStore('user', () => {
   const router = useRouter()
+  const isAuthenticated = ref('false')
+
+  const userDetails = ref({ myLearnings: [], MyTeachings: [] })
 
   const signUp = async (user: { userName: string, email: string, password: string }) => {
     try {
@@ -12,7 +16,12 @@ export const userStore = defineStore('user', () => {
       localStorage.setItem('email', userProfile.data.user.email)
       localStorage.setItem('id', userProfile.data.user.id)
       localStorage.setItem('role', userProfile.data.user.role)
-      router.push('/')
+
+      userDetails.value.myLearnings = userProfile.data.user.myLearnings
+      userDetails.value.MyTeachings = userProfile.data.user.MyTeachings
+      isAuthenticated.value = 'true'
+      // router.push('/')
+      return userProfile
     } catch (err) {
       return err
     }
@@ -21,12 +30,16 @@ export const userStore = defineStore('user', () => {
   const signIn = async (user: { userName: string, password: string }) => {
     try {
       const userProfile = await axios.post('http://localhost:3333/user/login', user)
-      console.log(userProfile)
       localStorage.setItem('token', userProfile.data.token.token)
       localStorage.setItem('email', userProfile.data.email)
       localStorage.setItem('id', userProfile.data.id)
       localStorage.setItem('role', userProfile.data.role)
-      router.push('/')
+
+      userDetails.value.myLearnings = userProfile.data.myLearnings
+      userDetails.value.MyTeachings = userProfile.data.myTeachings
+      isAuthenticated.value = 'true'
+      // router.push('/')
+      return userProfile
     } catch (err) {
       console.log(err)
       return err
@@ -34,22 +47,21 @@ export const userStore = defineStore('user', () => {
   }
 
   const logout = async () => {
+    const token = localStorage.getItem('token')
+    // console.log(token)
     try {
-      const token = localStorage.getItem('token')
       await axios.post('http://localhost:3333/user/logout', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-      localStorage.setItem('token', '')
-      localStorage.setItem('email', '')
-      localStorage.setItem('id', '')
-      localStorage.setItem('role', '')
+      localStorage.clear()
+      isAuthenticated.value = 'false'
       router.push('/login')
     } catch (err) {
       console.log(err)
     }
   }
 
-  return { signUp, signIn, logout }
+  return { signUp, signIn, logout, isAuthenticated, userDetails }
 }) 

@@ -1,26 +1,33 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { userStore } from '@/stores/user'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 
 const store = userStore()
+const router = useRouter()
 
 const user = reactive({
   email: '',
   password: ''
 })
 
-const error = ref([])
+const error = ref()
 
 const signIn = async () => {
   try {
-    const userl = await store.signIn(user)
-    if (userl.response.data == 'Invalid email or password') {
+    const userFromDb = await store.signIn(user)
+    console.log(userFromDb)
+    if (userFromDb.response?.data == 'Invalid email or password') {
       throw new Error('Invalid email or password')
     }
+    if (userFromDb.data?.success === true) {
+      router.push('/')
+    } else {
+      const err = userFromDb.response.data.errors[0].message
+      error.value = err
+    }
   } catch (err) {
-    console.log(err)
-    error.value.push(err)
+    error.value = err
   }
 }
 </script>
@@ -41,7 +48,7 @@ const signIn = async () => {
           <label for="password">Password</label>
           <input type="password" name="password" v-model="user.password" maxlength="10" />
         </div>
-        <p class="errors" v-if="error.length">{{ error[0] }}</p>
+        <p class="errors" v-if="error">{{ error }}</p>
       </section>
       <button type="submit" class="signUpButton mb-2">login</button>
       <RouterLink to="/register">Don't have an account? Sign up here</RouterLink>

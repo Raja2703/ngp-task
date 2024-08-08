@@ -25,6 +25,9 @@ export default class User extends BaseModel {
   @column()
   public myTeachings: Array<number>
 
+  // @column()
+  // public progress: Array<{ courseId: number, value: number }>
+
   @column()
   public rememberMeToken: string | null
 

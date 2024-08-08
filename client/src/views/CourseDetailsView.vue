@@ -5,7 +5,12 @@
 
       <p class="w-96 mb-2">{{ course.course_description }}</p>
 
-      <p class="text-xs">Created by {{ course.instructor_id }}</p>
+      <p class="text-xs">Created by {{ course.instructor?.name }}</p>
+
+      <p class="text-sm mt-8">Progress</p>
+      <v-progress-linear v-model="progress" height="25" class="mt-1">
+        <strong>{{ Math.ceil(progress) }}%</strong>
+      </v-progress-linear>
     </div>
     <div class="bg-white h-72">
       <iframe
@@ -19,7 +24,14 @@
         allowfullscreen
       ></iframe>
       <h1 class="mx-2 my-3 text-black">Enroll for free</h1>
-      <button class="mx-3 bg-green-800 text-white rounded-md px-3 py-1 w-11/12" @click="enroll">
+      <button v-if="isEnrolled" class="mx-3 bg-purple-800 text-white rounded-md px-3 py-1 w-11/12">
+        Enrolled
+      </button>
+      <button
+        v-else
+        class="mx-3 bg-green-800 text-white rounded-md px-3 py-1 w-11/12"
+        @click="enroll"
+      >
         Enroll
       </button>
     </div>
@@ -30,16 +42,26 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { courseStore } from '@/stores/course'
+import { userStore } from '@/stores/user'
 
 const route = useRoute()
 const router = useRouter()
 const store = courseStore()
+const userStoreData = userStore()
 const course = ref({})
+const progress = ref(26)
 let user_id = ref()
+let isEnrolled = ref(false)
+
 user_id.value = localStorage.getItem('id')
 
 onMounted(async () => {
   course.value = await store.getCourseDetails(route.params.id)
+  // console.log(userStoreData.userDetails)
+
+  if (userStoreData.userDetails.myLearnings.includes(Number(route.params.id))) {
+    isEnrolled.value = true
+  }
 })
 
 const enroll = async () => {

@@ -1,15 +1,28 @@
 <script setup lang="ts">
 import { userStore } from '@/stores/user'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const store = userStore()
+const isAuthenticated = ref('false')
+isAuthenticated.value = store.isAuthenticated
 
-const email: any = ref('')
-const role: any = ref('')
+const email: any = ref(localStorage.getItem('email'))
+const role: any = ref(localStorage.getItem('role'))
 
-email.value = localStorage.getItem('email')
-role.value = localStorage.getItem('role')
+watch(
+  () => store.isAuthenticated,
+  (newValue) => {
+    isAuthenticated.value = newValue
+    if (newValue) {
+      email.value = localStorage.getItem('email')
+      role.value = localStorage.getItem('role')
+    } else {
+      email.value = null
+      role.value = null
+    }
+  }
+)
 </script>
 
 <template>

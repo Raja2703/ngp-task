@@ -4,8 +4,15 @@ import User from 'App/Models/User'
 
 export default class AuthController {
   public createUser = async ({ request, response, auth }: HttpContextContract) => {
+    const registerSchema = schema.create({
+      name: schema.string(),
+      email: schema.string({}, [rules.email()]),
+      password: schema.string({}, [rules.minLength(6)]),
+      role: schema.enum(['user', 'tutor'])
+    })
     try {
-      const user = await User.create(request.body())
+      const payload = await request.validate({ schema: registerSchema, messages: { required: '{{ field }} is required', 'email.unique': 'email must be unique' } })
+      const user = await User.create(payload)
       const token = await auth.login(user)
       response.status(200)
 
@@ -29,7 +36,7 @@ export default class AuthController {
       password: schema.string({}, [rules.minLength(6)])
     })
 
-    const payload = await request.validate({ schema: loginSchema })
+    const payload = await request.validate({ schema: loginSchema, messages: { required: '{{ field }} is required' } })
     const { email, password } = payload
 
     try {
@@ -45,7 +52,9 @@ export default class AuthController {
         isLogged,
         email: user.email,
         id: user.id,
-        role: user.role
+        role: user.role,
+        myLearnings: user.myLearnings,
+        myTeachings: user.myTeachings
       }
     } catch (err) {
       console.log(err)
@@ -55,7 +64,7 @@ export default class AuthController {
 
   async logout({ auth }: HttpContextContract) {
     try {
-      await auth.use('api').revoke()
+      await auth.use('api').logout()
       return {
         revoked: true
       }

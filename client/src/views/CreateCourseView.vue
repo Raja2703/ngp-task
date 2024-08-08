@@ -39,7 +39,10 @@ const descriptionRules = [
 const createCourse = async () => {
   try {
     const course = await store.createCourse(CourseName.value, CourseDescription.value)
-    router.push('/')
+    console.log(course)
+    if (course.data.success === true) {
+      router.push('/')
+    }
   } catch (err) {
     console.log(err)
   }

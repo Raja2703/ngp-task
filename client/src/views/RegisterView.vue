@@ -1,8 +1,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { userStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 
 const store = userStore()
+const router = useRouter()
 
 const user = reactive({
   name: '',
@@ -16,10 +18,18 @@ const error = ref('')
 const signUp = async () => {
   try {
     const userFromDb = await store.signUp(user)
-    return userFromDb
+    console.log(userFromDb.response.data)
+    if (userFromDb.response.data.success === true) {
+      router.push('/')
+    } else {
+      const err =
+        userFromDb.response.data.error.messages.errors[0].message || userFromDb.error.detail
+      error.value = err
+    }
   } catch (err) {
     error.value = err
   }
+  // console.log(user)
 }
 </script>
 
@@ -45,7 +55,11 @@ const signUp = async () => {
 
         <div class="inputField">
           <label for="role">Role</label>
-          <input type="text" name="role" v-model="user.role" maxlength="10" />
+          <!-- <input type="text" name="role" v-model="user.role" maxlength="10" /> -->
+          <select class="border border-black w-48 outline-none" v-model="user.role">
+            <option value="user">user</option>
+            <option value="tutor">tutor</option>
+          </select>
         </div>
         <p class="errors" v-if="error">{{ error }}</p>
       </section>

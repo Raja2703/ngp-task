@@ -2,10 +2,12 @@ import { defineStore } from "pinia";
 import axios from "axios"
 import { useRouter } from 'vue-router'
 import { ref } from "vue";
+import { userStore } from "./user";
 
 export const courseStore = defineStore('course', () => {
   const router = useRouter()
   const url = import.meta.env.VITE_APP_URL
+  const userStoreData = userStore()
 
   const courses: any = ref([])
 
@@ -23,6 +25,7 @@ export const courseStore = defineStore('course', () => {
   const getCourseDetails = async (id: number) => {
     try {
       const course = await axios.get(`${url}/${id}`)
+      // console.log(course.data)
       return course.data.course
     } catch (err) {
       return err
@@ -33,7 +36,7 @@ export const courseStore = defineStore('course', () => {
     const id = localStorage.getItem('id')
     try {
       const course = await axios.get(`${url}/myLearnings/${id}`)
-      console.log(course)
+      // console.log(course)
       return course.data.myLearnings
     } catch (err) {
       return err
@@ -44,7 +47,7 @@ export const courseStore = defineStore('course', () => {
     const id = localStorage.getItem('id')
     try {
       const course = await axios.get(`${url}/myTeachings/${id}`)
-      console.log(course.data.myTeachings)
+      // console.log(course.data.myTeachings)
       return course.data.myTeachings
     } catch (err) {
       return err
@@ -59,7 +62,19 @@ export const courseStore = defineStore('course', () => {
         courseDescription: courseDescription,
         instructorId: id,
       })
-      console.log(course)
+      // console.log(course)
+
+      return course
+    } catch (err) {
+      console.log(err)
+      return err
+    }
+  }
+
+  const deleteCourse = async (id: number) => {
+    try {
+      const course = await axios.delete(`${url}/${id}`)
+      // console.log(course)
 
       return course
     } catch (err) {
@@ -74,7 +89,8 @@ export const courseStore = defineStore('course', () => {
       const course = await axios.post(`${url}/enroll/${id}`, {
         user_id: user_id
       })
-      console.log(course)
+      userStoreData.userDetails.myLearnings.push(id)
+      // console.log(userStoreData.userDetails)
 
       return course
     } catch (err) {
@@ -85,5 +101,5 @@ export const courseStore = defineStore('course', () => {
 
 
 
-  return { getAllCourses, getCourseDetails, getMyLearnings, getMyTeachings, createCourse, enroll }
+  return { getAllCourses, getCourseDetails, getMyLearnings, getMyTeachings, createCourse, enroll, deleteCourse }
 }) 
