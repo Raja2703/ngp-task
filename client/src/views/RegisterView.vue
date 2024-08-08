@@ -64,7 +64,7 @@ const signUp = async () => {
         <p class="errors" v-if="error">{{ error }}</p>
       </section>
       <button type="submit" class="signUpButton mb-3">Sign up</button>
-      <RouterLink to="/login">Already have an account? Login here</RouterLink>
+      <p>Already have an account?<RouterLink to="/login"> Login here</RouterLink></p>
     </div>
   </form>
 </template>

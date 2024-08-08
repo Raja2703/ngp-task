@@ -1,5 +1,14 @@
 <template>
-  <div class="p-10">
+  <AlertBox v-show="showAlert" message="course deleted successfully" color="success" />
+  <Modal
+    v-if="showModal"
+    :showModal="showModal"
+    :showAlert="showAlert"
+    :deletionId="deletionId"
+    @close="showModal = false"
+    @delete="showAlert = true"
+  />
+  <div class="pt-5 px-10 pb-10">
     <h1 class="text-2xl">{{ props.title }}</h1>
     <div class="flex flex-wrap gap-10 mt-10 justify-center">
       <v-card v-for="course in props.courses" :key="course.id" width="250">
@@ -35,19 +44,24 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRoute } from 'vue-router'
-import { courseStore } from '@/stores/course'
+import AlertBox from './alertBox.vue'
+import Modal from './modal.vue'
 
 const props = defineProps({
   courses: Array,
   title: String
 })
 
+const emit = defineEmits(['delete-course'])
+
 const route = useRoute()
 const tutor = ref(false)
-const store = courseStore()
+const showAlert = ref(false)
+let showModal = ref(false)
+const deletionId = ref(0)
 
 onMounted(() => {
   if (route.path == '/myTeachings') {
@@ -55,13 +69,16 @@ onMounted(() => {
   }
 })
 
-// const handleDelete = async (id) => {
-//   // console.log(id)
-//   try {
-//     const res = await store.deleteCourse(id)
-//     return res
-//   } catch (err) {
-//     return err
-//   }
-// }
+watch(showAlert, () => {
+  // props.courses = store
+  emit('delete-course')
+  setTimeout(() => {
+    showAlert.value = false
+  }, 1000)
+})
+
+const handleDelete = async (id) => {
+  deletionId.value = id
+  showModal.value = true
+}
 </script>

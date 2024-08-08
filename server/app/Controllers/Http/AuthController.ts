@@ -1,17 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
+import SigninValidator from 'App/Validators/SigninValidator'
+import SignupValidator from 'App/Validators/SignupValidator'
 
 export default class AuthController {
   public createUser = async ({ request, response, auth }: HttpContextContract) => {
-    const registerSchema = schema.create({
-      name: schema.string(),
-      email: schema.string({}, [rules.email()]),
-      password: schema.string({}, [rules.minLength(6)]),
-      role: schema.enum(['user', 'tutor'])
-    })
     try {
-      const payload = await request.validate({ schema: registerSchema, messages: { required: '{{ field }} is required', 'email.unique': 'email must be unique' } })
+      const payload = await request.validate(SignupValidator)
       const user = await User.create(payload)
       const token = await auth.login(user)
       response.status(200)
@@ -31,12 +26,7 @@ export default class AuthController {
   }
 
   async login({ request, response, auth }: HttpContextContract) {
-    const loginSchema = schema.create({
-      email: schema.string({}, [rules.email()]),
-      password: schema.string({}, [rules.minLength(6)])
-    })
-
-    const payload = await request.validate({ schema: loginSchema, messages: { required: '{{ field }} is required' } })
+    const payload = await request.validate(SigninValidator)
     const { email, password } = payload
 
     try {
@@ -74,7 +64,7 @@ export default class AuthController {
   }
 
 
-  public getAllUsers = async ({ request, response }: HttpContextContract) => {
+  public getAllUsers = async ({ response }: HttpContextContract) => {
     try {
       const users = await User.all()
       response.status(200)

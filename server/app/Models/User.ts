@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { column, beforeSave, BaseModel, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Course from './Course'
+import Learning from './Learning'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -19,11 +20,23 @@ export default class User extends BaseModel {
   @column()
   public role: string
 
-  @column()
-  public myLearnings: Array<number>
+  @hasMany(() => Learning, {
+    foreignKey: 'userId',
+    localKey: 'id'
+  })
+  public learnings: HasMany<typeof Learning>
 
-  @column()
-  public myTeachings: Array<number>
+  @hasMany(() => Course, {
+    foreignKey: 'instructorId',
+    localKey: 'id'
+  })
+  public courses: HasMany<typeof Course>
+
+  // @column()
+  // public myLearnings: Array<number>
+
+  // @column()
+  // public myTeachings: Array<number>
 
   // @column()
   // public progress: Array<{ courseId: number, value: number }>

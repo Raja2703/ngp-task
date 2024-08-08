@@ -7,10 +7,16 @@
 
       <p class="text-xs">Created by {{ course.instructor?.name }}</p>
 
-      <p class="text-sm mt-8">Progress</p>
-      <v-progress-linear v-model="progress" height="25" class="mt-1">
-        <strong>{{ Math.ceil(progress) }}%</strong>
-      </v-progress-linear>
+      <div v-show="isEnrolled">
+        <p class="text-sm mt-8">Progress</p>
+        <v-progress-linear v-model="progress" height="25" class="mt-1">
+          <strong>{{ Math.ceil(progress) }}%</strong>
+        </v-progress-linear>
+      </div>
+
+      <div class="mt-5">
+        <button class="bg-green-700 px-2 py-1 rounded-md" @click="handleEdit">edit</button>
+      </div>
     </div>
     <div class="bg-white h-72">
       <iframe
@@ -36,32 +42,46 @@
       </button>
     </div>
   </div>
+  <AlertBox v-show="showAlert" message="course enrolled successfully" color="#06D001" />
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { courseStore } from '@/stores/course'
-import { userStore } from '@/stores/user'
+import AlertBox from '@/components/alertBox.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = courseStore()
-const userStoreData = userStore()
 const course = ref({})
 const progress = ref(26)
 let user_id = ref()
 let isEnrolled = ref(false)
+let newEnroll = ref(false)
+let showAlert = ref(false)
+const userId = ref(localStorage.getItem('id'))
 
 user_id.value = localStorage.getItem('id')
 
+const isCourseEnrolled = async () => {
+  const myLearnings = await store.getMyLearnings(userId)
+  isEnrolled.value = myLearnings.some((learning) => {
+    if (learning.course_id === Number(route.params.id)) {
+      return true
+    }
+  })
+}
 onMounted(async () => {
   course.value = await store.getCourseDetails(route.params.id)
-  // console.log(userStoreData.userDetails)
+  isCourseEnrolled() // check if the current course is enrolled by  the logged in user
+})
 
-  if (userStoreData.userDetails.myLearnings.includes(Number(route.params.id))) {
-    isEnrolled.value = true
-  }
+watch(newEnroll, async () => {
+  isCourseEnrolled() // make the course enrolled
+  setTimeout(() => {
+    showAlert.value = false
+  }, 1000)
 })
 
 const enroll = async () => {
@@ -70,11 +90,22 @@ const enroll = async () => {
     return router.push('/login')
   }
   try {
-    const enrollement = await store.enroll(course.value.id)
-    router.push('/')
-    return enrollement
+    await store.enroll(course.value.id)
+    newEnroll.value = !newEnroll.value
+    showAlert.value = true
   } catch (err) {
     return err
   }
+}
+
+const handleEdit = () => {
+  router.push({
+    path: '/editCourse',
+    query: {
+      courseName: course.value.course_name,
+      courseDescription: course.value.course_description,
+      courseId: course.value.id
+    }
+  })
 }
 </script>

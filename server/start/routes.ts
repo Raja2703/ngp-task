@@ -3,6 +3,7 @@ import Route from '@ioc:Adonis/Core/Route'
 // course routes
 Route.get('/', 'CoursesController.getAllCourses')
 Route.get('/:id', 'CoursesController.getCourse')
+Route.patch('/:id', 'CoursesController.editCourse')
 Route.delete('/:id', 'CoursesController.deleteCourse')
 Route.post('/', 'CoursesController.createCourse')
 Route.post('/enroll/:id', 'CoursesController.enroll')

@@ -1,8 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import Course from "App/Models/Course"
-import User from 'App/Models/User'
+import Learning from 'App/Models/Learning'
 import CourseValidator from 'App/Validators/CourseValidator'
+import EditCourseValidator from 'App/Validators/EditCourseValidator'
 
 export default class CoursesController {
   public getAllCourses = async ({ response }: HttpContextContract) => {
@@ -64,22 +65,33 @@ export default class CoursesController {
   }
 
   public createCourse = async ({ request, response }: HttpContextContract) => {
-    const { instructorId } = request.body()
-    console.log(request.body())
     try {
       // validating body
       const payload = await request.validate(CourseValidator)
 
       // creating course
       const course = await Course.create(payload)
+      response.status(200)
+      return {
+        success: true,
+        course
+      }
+    } catch (err) {
+      console.log(err)
+      response.status(400).json({
+        success: false,
+        error: err
+      })
+    }
+  }
 
-      // update my_teachings array in users table
-      const user: any = await User.findOrFail(instructorId)
-      let myTeachings = user.myTeachings
-      myTeachings.push(course.id)
+  public editCourse = async ({ request, response, params }: HttpContextContract) => {
+    try {
+      // validating body
+      const payload = await request.validate(EditCourseValidator)
 
-      user.myTeachings = JSON.stringify(myTeachings)
-      await user.save()
+      // creating course
+      const course = await Course.updateOrCreate({ 'id': params.id }, payload)
       response.status(200)
       return {
         success: true,
@@ -95,31 +107,13 @@ export default class CoursesController {
   }
 
   public enroll = async ({ request, response, params }: HttpContextContract) => {
-    const { user_id } = request.body()
-
     try {
-      const course = await Course.findOrFail(params.id)
-
-      const user: any = await User.findOrFail(user_id)
-
-      // 
-      let myLearnings = user.myLearnings
-      myLearnings.push(course.id)
-      user.myLearnings = JSON.stringify(myLearnings)
-
-      // add progress value
-      // let progress = user.progress
-      // progress.push({ courseId: course.id, value: 20 })
-      // user.progress = JSON.stringify(progress)
-      await user.save()
-
-      course.noOfEnrollments += 1
-      await course.save()
-
+      request.body().courseId = params.id
+      const enrollment = await Learning.create(request.body())
       response.status(200)
       return {
         success: true,
-        user
+        enrollment
       }
     } catch (err) {
       console.log(err)
@@ -149,16 +143,8 @@ export default class CoursesController {
   }
 
   public getMyLearnings = async ({ response, params }: HttpContextContract) => {
-
     try {
-      const user = await User.findOrFail(params.user_id)
-      const courseIds = user.myLearnings
-
-      const courses = await Promise.all(
-        courseIds.map(async (ele) => {
-          return await Course.query().where('id', ele).preload('instructor').first();
-        })
-      );
+      const courses = await Learning.query().where('user_id', params.user_id).preload('course', (courseQuery) => { courseQuery.preload('instructor') })//.preload('user')
 
       response.status(200)
       return {

@@ -9,9 +9,9 @@ export default class extends BaseSchema {
       table.string('name', 30).notNullable()
       table.string('email', 255).notNullable().unique()
       table.string('password', 180).notNullable()
-      table.json('my_learnings').defaultTo([])
-      table.json('my_teachings').defaultTo([])
-      table.json('progress').defaultTo([])
+      // table.json('my_learnings').defaultTo([])
+      // table.json('my_teachings').defaultTo([])
+      // table.json('progress').defaultTo([])
       table.string('role').defaultTo('user')
       table.string('remember_me_token').nullable()
 

@@ -16,9 +16,9 @@ const error = ref()
 const signIn = async () => {
   try {
     const userFromDb = await store.signIn(user)
-    console.log(userFromDb)
+    // console.log(userFromDb)
     if (userFromDb.response?.data == 'Invalid email or password') {
-      throw new Error('Invalid email or password')
+      throw 'Invalid email or password'
     }
     if (userFromDb.data?.success === true) {
       router.push('/')
@@ -51,7 +51,7 @@ const signIn = async () => {
         <p class="errors" v-if="error">{{ error }}</p>
       </section>
       <button type="submit" class="signUpButton mb-2">login</button>
-      <RouterLink to="/register">Don't have an account? Sign up here</RouterLink>
+      <p>Don't have an account? <RouterLink to="/register">Sign up here</RouterLink></p>
     </div>
   </form>
 </template>
