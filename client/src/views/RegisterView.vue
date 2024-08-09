@@ -72,7 +72,7 @@ const signUp = async () => {
 <style scoped>
 form {
   /* border: 1px solid black; */
-  background-color: rgba(79, 23, 135, 0.507);
+  background-color: rgba(79, 23, 135, 0.199);
   border-radius: 5px;
   padding: 1rem 2rem;
   height: 100vh;

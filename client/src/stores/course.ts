@@ -35,6 +35,16 @@ export const courseStore = defineStore('course', () => {
     }
   }
 
+  const getLearningDetails = async (id: number) => {
+    try {
+      const course = await axios.get(`${url}/learning/${id}`)
+      console.log(course)
+      return course.data
+    } catch (err) {
+      return err
+    }
+  }
+
   const getMyLearnings = async () => {
     const id = localStorage.getItem('id')
     try {
@@ -112,5 +122,5 @@ export const courseStore = defineStore('course', () => {
 
 
 
-  return { getProgress, getAllCourses, getCourseDetails, getMyLearnings, getMyTeachings, createCourse, editCourse, enroll, deleteCourse }
+  return { getProgress, getAllCourses, getCourseDetails, getLearningDetails, getMyLearnings, getMyTeachings, createCourse, editCourse, enroll, deleteCourse }
 }) 

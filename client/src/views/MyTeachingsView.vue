@@ -1,5 +1,11 @@
 <template>
-  <Card :courses="courses" title="Created Courses" @delete-course="reloadScreen" />
+  <Card
+    v-if="courses.length"
+    :courses="courses"
+    title="Created Courses"
+    @delete-course="reloadScreen"
+  />
+  <h1 class="text-center mt-10 text-2xl" v-else>No Teachings yet!..</h1>
 </template>
 
 <script setup>

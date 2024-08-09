@@ -9,9 +9,19 @@
     @delete="showAlert = true"
   />
   <div class="pt-5 px-10 pb-10">
-    <h1 class="text-2xl">{{ props.title }}</h1>
-    <div class="flex flex-wrap gap-10 mt-10 justify-center">
-      <v-card v-for="course in props.courses" :key="course.id" width="250">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl">{{ props.title }}</h1>
+      <RouterLink to="/myLearnings" v-show="learning && route.path !== '/myLearnings'"
+        ><h1 class="text-base text-teal-900 tracking-normal">View all >></h1></RouterLink
+      >
+    </div>
+    <div class="grid grid-cols-3 ml-2 gap-10 mt-10 justify-center">
+      <v-card
+        v-for="course in props.courses"
+        :key="course.id"
+        width="250"
+        class="hover:scale-105 hover:ease-linear duration-75 hover:transition-all hover:cursor-pointer"
+      >
         <v-img
           class="align-end text-white"
           height="100"
@@ -28,7 +38,7 @@
 
         <v-card-actions class="w-full flex justify-start gap-3">
           <button class="border px-2 py-1 bg-purple-400 rounded-md text-white hover:bg-purple-600">
-            <RouterLink :to="`/course/${course.id}`">Explore</RouterLink>
+            <RouterLink :to="`/course/${course.id}?learning=${learning}`">Explore</RouterLink>
           </button>
           <button
             v-if="tutor"
@@ -49,16 +59,19 @@ import { RouterLink } from 'vue-router'
 import { useRoute } from 'vue-router'
 import AlertBox from './alertBox.vue'
 import Modal from './modal.vue'
+import router from '@/router'
 
 const props = defineProps({
   courses: Array,
-  title: String
+  title: String,
+  isLearning: String
 })
 
 const emit = defineEmits(['delete-course'])
 
 const route = useRoute()
 const tutor = ref(false)
+const learning = ref(false)
 const showAlert = ref(false)
 let showModal = ref(false)
 const deletionId = ref(0)
@@ -66,6 +79,12 @@ const deletionId = ref(0)
 onMounted(() => {
   if (route.path == '/myTeachings') {
     tutor.value = true
+  }
+  if (route.path == '/myLearnings') {
+    learning.value = true
+  }
+  if (props.isLearning == 'true') {
+    learning.value = true
   }
 })
 

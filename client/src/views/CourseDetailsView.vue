@@ -9,13 +9,13 @@
 
       <div v-show="isEnrolled">
         <p class="text-sm mt-8">Progress</p>
-        <v-progress-linear v-model="progress" height="25" class="mt-1">
-          <strong>{{ Math.ceil(progress) }}%</strong>
+        <v-progress-linear v-model="course.progress" height="25" class="mt-1">
+          <strong>{{ Math.ceil(course.progress) }}%</strong>
         </v-progress-linear>
       </div>
 
-      <div class="mt-5">
-        <button class="bg-green-700 px-2 py-1 rounded-md" @click="handleEdit">edit</button>
+      <div class="mt-5" v-if="course.instructor?.id == user_id">
+        <button class="bg-green-700 px-2 py-1 rounded-md" @click="handleEdit">Edit</button>
       </div>
     </div>
     <div class="bg-white h-72">
@@ -67,14 +67,21 @@ user_id.value = localStorage.getItem('id')
 const isCourseEnrolled = async () => {
   const myLearnings = await store.getMyLearnings(userId)
   isEnrolled.value = myLearnings.some((learning) => {
-    if (learning.course_id === Number(route.params.id)) {
+    if (learning.course_id === course.value.id) {
       return true
     }
   })
 }
 onMounted(async () => {
-  course.value = await store.getCourseDetails(route.params.id)
-  isCourseEnrolled() // check if the current course is enrolled by  the logged in user
+  if (route.query.learning === 'true') {
+    course.value = await store.getLearningDetails(route.params.id)
+    course.value = { ...course.value.course, progress: course.value.progress }
+    console.log(course.value)
+    isCourseEnrolled() // check if the current course is enrolled by  the logged in user
+  } else {
+    course.value = await store.getCourseDetails(route.params.id)
+    isCourseEnrolled() // check if the current course is enrolled by  the logged in user
+  }
 })
 
 watch(newEnroll, async () => {
