@@ -110,6 +110,11 @@ export default class CoursesController {
     try {
       request.body().courseId = params.id
       const enrollment = await Learning.create(request.body())
+
+      const course = await Course.findOrFail(params.id)
+      course.noOfEnrollments += 1
+      course.save()
+
       response.status(200)
       return {
         success: true,

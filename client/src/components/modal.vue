@@ -22,7 +22,7 @@ const handleYes = async () => {
 </script>
 
 <template>
-  <div class="modalWindow relative">
+  <div class="modalWindow">
     <div class="innerDiv z-10">
       <h1>Are you sure, you want to delete</h1>
       <div class="buttons">
@@ -37,7 +37,7 @@ const handleYes = async () => {
 <style scoped>
 .modalWindow {
   z-index: 10;
-  position: absolute;
+  position: fixed;
   width: 100vw;
   display: flex;
   flex-direction: column;

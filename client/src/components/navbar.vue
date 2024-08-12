@@ -28,7 +28,7 @@ watch(
 </script>
 
 <template>
-  <nav class="navbar">
+  <nav class="navbar sticky top-0 z-30">
     <div class="flex items-center justify-center ml-1">
       <RouterLink class="text-2xl" to="/">E-learn</RouterLink>
       <ul>

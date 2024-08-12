@@ -65,12 +65,14 @@ export const courseStore = defineStore('course', () => {
     }
   }
 
-  const createCourse = async (courseName: string, courseDescription: string) => {
+  const createCourse = async (courseName: string, courseDescription: string, category: String, coveredTopics: String) => {
     const id = localStorage.getItem('id')
     try {
       const course = await axios.post(`${url}/`, {
         courseName: courseName,
         courseDescription: courseDescription,
+        topics: coveredTopics,
+        category: category,
         instructorId: id,
       })
 

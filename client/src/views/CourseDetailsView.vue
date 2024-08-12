@@ -1,11 +1,13 @@
 <template>
-  <div class="p-5 mt-2 bg-zinc-800 flex justify-around text-white">
+  <div class="p-5 mt-2 bg-zinc-800 flex px-20 text-white">
     <div>
       <h1 class="text-4xl font-semibold mb-5">{{ course.course_name }}</h1>
 
       <p class="w-96 mb-2">{{ course.course_description }}</p>
 
       <p class="text-xs">Created by {{ course.instructor?.name }}</p>
+
+      <p class="text-sm mt-5">Totally {{ course.no_of_enrollments }} students enrolled</p>
 
       <div v-show="isEnrolled">
         <p class="text-sm mt-8">Progress</p>
@@ -18,7 +20,7 @@
         <button class="bg-green-700 px-2 py-1 rounded-md" @click="handleEdit">Edit</button>
       </div>
     </div>
-    <div class="bg-white h-72">
+    <div class="bg-white h-72 fixed right-24 top-14 border border-black">
       <iframe
         width="340"
         height="185"
@@ -43,6 +45,14 @@
     </div>
   </div>
   <AlertBox v-show="showAlert" message="course enrolled successfully" color="#06D001" />
+  <div class="mx-12 my-10 border border-black rounded-sm">
+    <div class="w-3/6 p-6">
+      <h1 class="text-lg mb-5 tracking-wide">What you'll learn:</h1>
+      <ul class="grid grid-cols-2">
+        <li v-for="(topic, i) in topics" :key="i"><span>✔</span> {{ topic }}</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -55,11 +65,11 @@ const route = useRoute()
 const router = useRouter()
 const store = courseStore()
 const course = ref({})
-const progress = ref(26)
 let user_id = ref()
 let isEnrolled = ref(false)
 let newEnroll = ref(false)
 let showAlert = ref(false)
+const topics = ref([])
 const userId = ref(localStorage.getItem('id'))
 
 user_id.value = localStorage.getItem('id')
@@ -80,8 +90,11 @@ onMounted(async () => {
     isCourseEnrolled() // check if the current course is enrolled by  the logged in user
   } else {
     course.value = await store.getCourseDetails(route.params.id)
+    console.log(course.value)
     isCourseEnrolled() // check if the current course is enrolled by  the logged in user
   }
+
+  topics.value = course.value.topics.split(',')
 })
 
 watch(newEnroll, async () => {

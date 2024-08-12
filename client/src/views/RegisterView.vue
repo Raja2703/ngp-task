@@ -13,20 +13,23 @@ const user = reactive({
   role: 'user'
 })
 
+const items = ['user', 'tutor']
+
 const error = ref('')
 
 const signUp = async () => {
   try {
     const userFromDb = await store.signUp(user)
-    console.log(userFromDb.response.data)
-    if (userFromDb.response.data.success === true) {
+    console.log(userFromDb)
+    if (userFromDb.data.success === true) {
       router.push('/')
     } else {
       const err =
-        userFromDb.response.data.error.messages.errors[0].message || userFromDb.error.detail
+        userFromDb.response.data?.error?.messages.errors[0].message || userFromDb.error?.detail
       error.value = err
     }
   } catch (err) {
+    console.log(err)
     error.value = err
   }
   // console.log(user)
@@ -38,9 +41,14 @@ const signUp = async () => {
     <div class="bg-white flex flex-col justify-center items-center rounded-md px-12 py-8">
       <h1>Register</h1>
       <section class="inputClass">
-        <div class="inputField">
+        <!-- <div class="inputField">
           <label for="name">Name</label>
-          <input type="text" name="name" v-model="user.name" />
+          <input
+            type="text"
+            class="py-10 h-10 border-0 rounded-t-sm"
+            name="name"
+            v-model="user.name"
+          />
         </div>
 
         <div class="inputField">
@@ -51,19 +59,55 @@ const signUp = async () => {
         <div class="inputField">
           <label for="password">Password</label>
           <input type="password" name="password" v-model="user.password" maxlength="10" />
-        </div>
+        </div> -->
 
-        <div class="inputField">
+        <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
+          <v-text-field
+            max-height="10px"
+            label="Name"
+            type="text"
+            v-model="user.name"
+          ></v-text-field>
+        </v-responsive>
+
+        <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
+          <v-text-field
+            max-height="10px"
+            label="Email"
+            type="text"
+            v-model="user.email"
+          ></v-text-field>
+        </v-responsive>
+
+        <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
+          <v-text-field
+            max-height="10px"
+            label="Password"
+            type="password"
+            v-model="user.password"
+            max-length="10"
+          ></v-text-field>
+        </v-responsive>
+
+        <v-select
+          :items="items"
+          density="comfortable"
+          label="Role"
+          v-model="user.role"
+          class="w-72"
+          active="true"
+        ></v-select>
+
+        <!-- <div class="inputField">
           <label for="role">Role</label>
-          <!-- <input type="text" name="role" v-model="user.role" maxlength="10" /> -->
           <select class="border border-black w-48 outline-none" v-model="user.role">
             <option value="user">user</option>
             <option value="tutor">tutor</option>
           </select>
-        </div>
+        </div> -->
         <p class="errors" v-if="error">{{ error }}</p>
       </section>
-      <button type="submit" class="signUpButton mb-3">Sign up</button>
+      <button type="submit" class="signUpButton mb-3 py-1">Sign up</button>
       <p>Already have an account?<RouterLink to="/login"> Login here</RouterLink></p>
     </div>
   </form>
@@ -75,7 +119,7 @@ form {
   background-color: rgba(79, 23, 135, 0.199);
   border-radius: 5px;
   padding: 1rem 2rem;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

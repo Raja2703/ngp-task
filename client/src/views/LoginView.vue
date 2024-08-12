@@ -39,18 +39,35 @@ const signIn = async () => {
     >
       <h1>Sign in</h1>
       <section class="inputClass">
-        <div class="inputField">
+        <!-- <div class="inputField">
           <label for="email">Email</label>
           <input type="text" name="email" v-model="user.email" />
-        </div>
+        </div> -->
 
-        <div class="inputField">
+        <!-- <div class="inputField">
           <label for="password">Password</label>
           <input type="password" name="password" v-model="user.password" maxlength="10" />
-        </div>
-        <p class="errors" v-if="error">{{ error }}</p>
+        </div> -->
+        <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
+          <v-text-field
+            max-height="10px"
+            hint="Enter your password to access this website"
+            label="Email"
+            type="text"
+            v-model="user.email"
+          ></v-text-field>
+        </v-responsive>
+        <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
+          <v-text-field
+            hint="Enter your password to access this website"
+            label="Password"
+            type="password"
+            v-model="user.password"
+          ></v-text-field>
+        </v-responsive>
+        <p class="errors" v-show="error">{{ error }}</p>
       </section>
-      <button type="submit" class="signUpButton mb-2">login</button>
+      <button type="submit" class="signUpButton mb-2 px-2 py-1">login</button>
       <p>Don't have an account? <RouterLink to="/register">Sign up here</RouterLink></p>
     </div>
   </form>

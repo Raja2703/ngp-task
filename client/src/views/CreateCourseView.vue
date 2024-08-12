@@ -7,6 +7,19 @@
         :rules="descriptionRules"
         label="Course description"
       ></v-text-field>
+      <v-select
+        :items="items"
+        density="comfortable"
+        label="Category"
+        v-model="CourseCategory"
+        class="w-72"
+        active="true"
+      ></v-select>
+      <v-text-field
+        v-model="CoveredTopics"
+        :rules="topicRules"
+        label="Topics covered"
+      ></v-text-field>
       <v-btn class="mt-2" type="submit" block>Submit</v-btn>
     </v-form>
   </v-sheet>
@@ -19,8 +32,12 @@ import { useRouter } from 'vue-router'
 
 const CourseName = ref('')
 const CourseDescription = ref('')
+const CourseCategory = ref('Web development')
+const CoveredTopics = ref('')
 const store = courseStore()
 const router = useRouter()
+
+const items = ['Web development', 'App development', 'Data Science']
 
 const nameRules = [
   (value) => {
@@ -36,10 +53,22 @@ const descriptionRules = [
   }
 ]
 
+const topicRules = [
+  (value) => {
+    if (value) return true
+    return 'Course must have some topics'
+  }
+]
+
 const createCourse = async () => {
   try {
-    const course = await store.createCourse(CourseName.value, CourseDescription.value)
-    // console.log(course)
+    const course = await store.createCourse(
+      CourseName.value,
+      CourseDescription.value,
+      CourseCategory.value,
+      CoveredTopics.value
+    )
+    console.log(course)
     if (course.data.success === true) {
       router.push('/')
     }

@@ -7,36 +7,36 @@ export default class extends BaseSeeder {
       {
         userId: 1,
         courseId: 3,
-        progress: 0
+        progress: 10
       },
       {
         userId: 1,
         courseId: 4,
-        progress: 0
+        progress: 20
       }, {
         userId: 2,
         courseId: 1,
-        progress: 0
+        progress: 30
       },
       {
         userId: 2,
         courseId: 2,
-        progress: 0
+        progress: 40
       },
       {
         userId: 3,
         courseId: 1,
-        progress: 0
+        progress: 50
       },
       {
         userId: 3,
         courseId: 2,
-        progress: 0
+        progress: 60
       },
       {
         userId: 3,
         courseId: 3,
-        progress: 0
+        progress: 70
       },
     ])
   }

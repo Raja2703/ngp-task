@@ -17,6 +17,12 @@ export default class Course extends BaseModel {
   @column()
   public noOfEnrollments: number
 
+  @column()
+  public topics: string
+
+  @column()
+  public category: string
+
   @hasOne(() => User, {
     foreignKey: 'id',
     localKey: 'instructorId',

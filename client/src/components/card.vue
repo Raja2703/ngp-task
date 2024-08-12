@@ -59,7 +59,6 @@ import { RouterLink } from 'vue-router'
 import { useRoute } from 'vue-router'
 import AlertBox from './alertBox.vue'
 import Modal from './modal.vue'
-import router from '@/router'
 
 const props = defineProps({
   courses: Array,
@@ -89,7 +88,6 @@ onMounted(() => {
 })
 
 watch(showAlert, () => {
-  // props.courses = store
   emit('delete-course')
   setTimeout(() => {
     showAlert.value = false

@@ -39,7 +39,6 @@ let constantFilteredCourse = ref([])
 const search = () => {
   filteredCourse.value = courses.value.filter((course) => {
     if (course.course_name.toLowerCase().indexOf(searchText.value.toLowerCase()) > -1) {
-      // console.log(searchText.value)
       return course
     }
   })
