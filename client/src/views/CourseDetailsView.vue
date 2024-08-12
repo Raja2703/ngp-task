@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 mt-2 bg-zinc-800 flex px-20 text-white">
+  <div class="p-5 mt-2 bg-zinc-800 flex justify-around px-20 text-white">
     <div>
       <h1 class="text-4xl font-semibold mb-5">{{ course.course_name }}</h1>
 
@@ -20,7 +20,7 @@
         <button class="bg-green-700 px-2 py-1 rounded-md" @click="handleEdit">Edit</button>
       </div>
     </div>
-    <div class="bg-white h-72 fixed right-24 top-14 border border-black">
+    <div class="bg-white h-72">
       <iframe
         width="340"
         height="185"

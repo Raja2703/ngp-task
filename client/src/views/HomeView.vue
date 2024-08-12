@@ -6,7 +6,7 @@
       @input="search"
       v-model="searchText"
     /> -->
-    <v-col md="12">
+    <v-col class="flex gap-5 justify-center">
       <v-text-field
         v-model="searchText"
         label="Search"
@@ -14,8 +14,18 @@
         variant="outlined"
         hide-details
         single-line
+        class="w-2/3"
         @input="search"
       ></v-text-field>
+      <v-select
+        :items="filterItems"
+        density="comfortable"
+        label="filter"
+        v-model="filter"
+        class="w-1/3"
+        hide-details
+        active="true"
+      ></v-select>
     </v-col>
   </div>
 
@@ -24,7 +34,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { courseStore } from '@/stores/course'
 import Card from '@/components/card.vue'
 
@@ -35,6 +45,9 @@ let myFilteredLearnings = ref([])
 let searchText = ref('')
 let filteredCourse = ref([])
 let constantFilteredCourse = ref([])
+const filter = ref('')
+
+const filterItems = ['Web development', 'App development', 'Data Science']
 
 const search = () => {
   filteredCourse.value = courses.value.filter((course) => {
@@ -77,6 +90,11 @@ onMounted(async () => {
   for (let i = 0; i < 2; i++) {
     myFilteredLearnings.value.push(myLearnings.value[i])
   }
-  console.log(myFilteredLearnings.value)
+  // console.log(myFilteredLearnings.value)
+})
+
+watch(filter, async () => {
+  filteredCourse.value = await store.getAllCourses(filter.value)
+  console.log(filteredCourse.value)
 })
 </script>

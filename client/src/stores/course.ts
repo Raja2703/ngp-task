@@ -7,9 +7,10 @@ export const courseStore = defineStore('course', () => {
 
   const courses: any = ref([])
 
-  const getAllCourses = async () => {
+  const getAllCourses = async (filter: String = "") => {
     try {
-      const allCourses = await axios.get(`${url}/`)
+      const allCourses = await axios.get(`${url}?category=${filter}`)
+      console.log(filter)
       courses.value = allCourses.data.courses
       return courses.value
     } catch (err) {

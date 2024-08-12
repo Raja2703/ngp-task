@@ -6,11 +6,13 @@ import CourseValidator from 'App/Validators/CourseValidator'
 import EditCourseValidator from 'App/Validators/EditCourseValidator'
 
 export default class CoursesController {
-  public getAllCourses = async ({ response }: HttpContextContract) => {
+  public getAllCourses = async ({ request, response }: HttpContextContract) => {
+    const fitlerQuery = request.input('category')
     try {
-      const courses = await Course.query().preload('instructor')
+      const query = Course.query()
+      const courses = await query.preload('instructor').if(fitlerQuery, (query) => query.where('category', fitlerQuery))
       response.status(200)
-
+      console.log(fitlerQuery)
       return {
         success: true,
         courses

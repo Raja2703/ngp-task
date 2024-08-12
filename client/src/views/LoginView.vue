@@ -39,15 +39,6 @@ const signIn = async () => {
     >
       <h1>Sign in</h1>
       <section class="inputClass">
-        <!-- <div class="inputField">
-          <label for="email">Email</label>
-          <input type="text" name="email" v-model="user.email" />
-        </div> -->
-
-        <!-- <div class="inputField">
-          <label for="password">Password</label>
-          <input type="password" name="password" v-model="user.password" maxlength="10" />
-        </div> -->
         <v-responsive class="mx-auto w-72" max-width="344" min-height="10">
           <v-text-field
             max-height="10px"
